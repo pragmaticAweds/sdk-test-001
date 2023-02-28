@@ -43,6 +43,8 @@ jobs:
         with:
           node-version: 16.x
           cache: "yarn"
+          - name: Authenticate with npm
+          run: npm login --registry=https://registry.npmjs.org/ --scope=@your-scope --always-auth --auth-type=oauth --_authToken=${{ secrets.NPM_TOKEN }}
       # Install the project dependencies using Yarn.
       - run: yarn install --frozen-lockfile
       # Use the changesets GitHub action to generate a release pull request or publish the package.
@@ -54,5 +56,4 @@ jobs:
         env:
           # Use the GITHUB_TOKEN secret to authenticate with GitHub APIs.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Use the NPM_TOKEN secret to authenticate with the NPM registry.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      

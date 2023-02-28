@@ -53,6 +53,6 @@ jobs:
           publish: yarn run release
         env:
           # Use the GITHUB_TOKEN secret to authenticate with GitHub APIs.
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+          WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
           # Use the NPM_TOKEN secret to authenticate with the NPM registry.
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

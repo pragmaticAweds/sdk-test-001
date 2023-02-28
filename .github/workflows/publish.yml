@@ -1,27 +1,58 @@
 name: Publish
+
+# This workflow publishes a new version of the project when changes are pushed to the main branch.
 on:
   push:
     branches:
-      - "main"
+      - main
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Define a unique concurrency name that identifies the job and branch name.
+concurrency: publish-${{ github.job }}-${{ github.ref }}
 
 jobs:
-  builds:
+  # Build and test the project before publishing.
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      # Checkout the code from the repository.
+      - uses: actions/checkout@v2
+      # Set up the Node.js environment with the required version and dependencies.
+      - uses: actions/setup-node@v2
         with:
           node-version: 16.x
           cache: "yarn"
-
+      # Install the project dependencies using Yarn.
       - run: yarn install --frozen-lockfile
+      # Build the project.
+      - name: Build
+        run: yarn build
+      # Run the project tests.
+      - name: Test
+        run: yarn test
+
+  # Publish the package to the registry.
+  publish-package:
+    # This job depends on the build-and-test job to complete successfully.
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code from the repository.
+      - uses: actions/checkout@v2
+      # Set up the Node.js environment with the required version and dependencies.
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: "yarn"
+      # Install the project dependencies using Yarn.
+      - run: yarn install --frozen-lockfile
+      # Use the changesets GitHub action to generate a release pull request or publish the package.
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
         with:
           publish: yarn run release
         env:
+          # Use the GITHUB_TOKEN secret to authenticate with GitHub APIs.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_SECRET: ${{ secrets.NPM_SECRET }}
+          # Use the NPM_TOKEN secret to authenticate with the NPM registry.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

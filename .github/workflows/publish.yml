@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: 16.x
           cache: "yarn"
-          - name: Authenticate with npm
+      - name: Authenticate with npm
           run: npm login --registry=https://registry.npmjs.org/ --scope=@your-scope --always-auth --auth-type=oauth --_authToken=${{ secrets.NPM_TOKEN }}
       # Install the project dependencies using Yarn.
           run: yarn install --frozen-lockfile

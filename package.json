@@ -1,6 +1,6 @@
 {
   "name": "@pragmatic_aweds/sdk-test-001",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "private": false,
   "main": "./dist/index.js",

@@ -5,4 +5,4 @@
 ### Patch Changes
 
 - 8daa24d: first init
-- Fixed dist issue
+- Fixed dist issues

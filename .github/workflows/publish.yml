@@ -1,43 +1,27 @@
-# This is a yarn.yml file
 name: Publish
-
-# Define the events that will trigger the workflow
 on:
   push:
     branches:
       - "main"
 
-# Define the different jobs that will run as part of the workflow
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
-  build:
+  builds:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
-      - uses: actions/checkout@v2
-
-      # Use the yarn cache action to speed up builds
-      - name: Cache Yarn packages
-        uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          path: |
-            ~/.cache/yarn
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 16.x
+          cache: "yarn"
 
-      # Install project dependencies using Yarn
-      - name: Install dependencies
-        run: yarn install
-
-      # Run the release script using Yarn
+      - run: yarn install --frozen-lockfile
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: yarn release
+          publish: yarn run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_USERNAME: ${{ secrets.NPM_USERNAME }}
-          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
